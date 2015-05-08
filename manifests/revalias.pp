@@ -11,34 +11,24 @@
 #
 # Supported arguments:
 # $revalias - The name you want to give the revalias.
-#             If not set, defaults to == $title
+#             If not set, defaults to resource $name
 # $from     - The From: you want $revalias will be identified as.
 # $mailhub  - The mailhub these messages will be sent through.
 #             Default: empty
-# $order    - f you want to specify an order in the file. Default to 50
+# $order    - If you want to specify an order in the file. Default to 50
 # $enable   - true / false. If false, the rule _IS NOT ADDED_ to the
 #             revaliases file
 #             Defaults to true
 
 define ssmtp::revalias (
-  $revalias  = '',
+  $revalias  = $name,
   $from      = '',
   $mailhub   = '',
-  $order     = '',
-  $enable    = true ) {
+  $order     = 50,
+  $enable    = true,
+) {
 
   include ssmtp
-
-  $real_revalias = $revalias ? {
-    ''      => $name,
-    default => $revalias,
-  }
-
-  # If (concat) order is not defined we find out the right one
-  $real_order = $order ? {
-    ''      => '50',
-    default => $order,
-  }
 
   $ensure = bool2ensure($enable)
 
@@ -55,6 +45,6 @@ define ssmtp::revalias (
     ensure  => $ensure,
     target  => $ssmtp::revaliases_file,
     content => template($ssmtp::revaliases_template),
-    order   => $real_order,
+    order   => $order,
   }
 }
